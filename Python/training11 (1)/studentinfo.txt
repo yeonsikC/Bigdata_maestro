@@ -1,0 +1,5 @@
+Hong,computer,2,50,50,50,50,50,
+Kim,electronic,3,90,90,90,90,90,90,
+Lee,computer,2,70,70,70,70,70,
+Park,electronic,3,88,98,79,85,95,75,
+Yoon,history,4,90,90,90,80,95,79,89,

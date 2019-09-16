@@ -1,0 +1,269 @@
+from collections import Counter
+
+def readCsv(addr):
+    '''
+    작성자 : 최연식
+    csv파일을 한줄한줄 불러오는데,
+    str형태로 불러와지므로 int형과 float형 변환까지 추가로 하였다.
+    '''
+    with open(addr,"r") as f:
+        df=[]
+        chk=0
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            line = line[:len(line)-1]
+            a = line.split(',')
+            for i in range(len(a)):
+                if is_digit(a[i]) == True:
+                    if is_float(a[i]) == True:
+                        a[i] = float(a[i])
+                    else:
+                        a[i] = int(a[i])
+            df.append(a)
+        return df
+
+def is_digit(str):
+    '''
+    작성자 : 최연식
+    숫자인지 판단하는 작업.
+    tmp에 float(값)을 넣었을 때,
+    오류가 발생하면 문자형으로 인식
+    '''
+    try:
+        tmp = float(str)
+        return True
+    except ValueError:
+        return False
+
+def is_float(str):
+    '''
+    작성자 : 최연식
+    소수인지 판단하는 작업.
+    float(값)을 1로 나누었을 때 그 값이 0보다 크게되면 소수로 판단.
+    0보다 크지 않거나, 오류 발생시 소수가 아닌것으로 판단.
+    '''
+    try:
+        if float(str)%1 > 0:
+            return True
+        else:
+            return False
+    except ValueError:
+        return False
+
+def printDf():
+    '''
+    작성자 : 최연식
+    전체 데이터를 출력.
+    '''
+    for i in range(len(df)):
+        print(df[i])
+
+def printStr():
+    '''
+    작성자 : 최연식
+    각 변수별 데이터 타입을 출력한다.
+    '''
+    chk = 0
+    for i in range(1,len(df)):
+        for j in range(len(df[0])):
+            if df[i][j] == "NA":
+                break
+            chk += 1
+        if chk==len(df[0]):
+            for j in range(len(df[0])):
+                type_var = type(df[i][j])
+                print("{0:<10} 변수의 데이터 타입 : ".format(df[0][j] ), end='')
+                print(type_var)
+
+def printDim():
+    '''
+    작성자 : 최연식
+    데이터셋의 변수의 수와, 데이터의 수를 출력한다.
+    '''
+    print('변수의 수 : {0}'.format(len(df[0])))
+    print('데이터 수 : {0}'.format((len(df)-1)))
+
+def varList():
+    '''
+    작성자 : 최연식
+    변수명을 리턴
+    '''
+    varList = df[0]
+    return varList
+
+def printHead(length=20):
+    '''
+    작성자 : 최연식
+    전체 데이터셋에서, 원하는 수만큼 앞에서부터 데이터를 가져온다.
+    매개변수를 입력하지 않을시, 20개를 가져온다.
+    하지만, 데이터 수가 20개보다 적을 수 있으므로,
+    그에 대비하여 20개보다 적을 시 그 데이터 개수만큼 출력한다.
+    '''
+    if len(df) < 20:
+        if length == 20:
+            for i in range(len(df)):
+                print(df[i])
+        else:
+            for i in range(length+1):
+                print(df[i])
+    else:        
+        for i in range(length+1):
+            print(df[i])
+
+def printTail(length=20):
+    '''
+    작성자 : 최연식
+    전체 데이터셋에서, 원하는 수만큼 뒤에서부터 데이터를 가져온다.
+    매개변수를 입력하지 않을시, 20개를 가져온다.
+    하지만, 데이터 수가 20개보다 적을 수 있으므로,
+    그에 대비하여 20개보다 적을 시 그 데이터 개수만큼 출력한다.
+    '''
+    print(varList())
+    if len(df) < 20:
+        if length == 20:
+            for i in range(1, len(df)):
+                print(df[i])
+        else:
+            for i in range(len(df),len(df)-length,-1):
+                print(df[i-1])
+    else:
+        for i in range(len(df),len(df)-length,-1):
+            print(df[i-1])
+
+def group_by():
+    '''
+    작성자 : 최연식
+    그룹별 목적 변수에 대한 합계 또는 평균을 구하는 함수.
+    첫 번째로, 그룹화할 변수를 선택.
+    두 번째로, 목적 변수를 선택.
+    세 번째로, 합계를 구할지 평균을 구할지 선택.
+    '''
+    group = ''
+    purpose = ''
+    chk1 = ''
+    chk2 = ''
+    g_name = []
+    g_val = []
+    mean_val = []
+    total_mean = []
+    total_sum = []
+    val_chk = []
+    print(varList())
+    group = input("그룹화하고 싶은 변수를 선택하세요.")
+    purpose = input("목적변수를 선택하세요.")
+    sum_or_mean = int(input("1. 합계 구하기\n2. 평균 구하기\n(숫자만 입력하시오."))
+    for i in range(len(df[0])):
+        if df[0][i] == group:
+            chk1 = i
+            break
+    for i in range(len(df[0])):
+        if df[0][i] == purpose:
+            chk2 = i
+            break
+    
+    g_name.append(df[1][chk1])
+    g_val.append(df[1][chk2])
+    val_chk.append(1)
+    for i in range(2, len(df)):
+        for j in range(len(g_name)):
+            chk = 0
+            if g_name[j] == df[i][chk1]:
+                g_val[j] += df[i][chk2]
+                val_chk[j] += 1
+                chk += 1
+                break
+
+        if chk == 0:
+            g_name.append(df[i][chk1])
+            g_val.append(df[i][chk2])
+            val_chk.append(1)
+    for i in range(len(val_chk)):
+        mean_val.append(g_val[i]/val_chk[i])
+        total_mean.append([g_name[i], mean_val[i]])
+        total_sum.append([g_name[i], g_val[i]])
+
+    if sum_or_mean == 1:
+        return total_sum
+    else:
+        return total_mean
+
+def barplot():
+    '''
+    작성자 : 최연식
+    기준 그룹에 따른 목적변수 값을 평균 또는 합계를 통하여 막대그래프를 생성.
+    '''
+    total = ["그룹변수", "y값", "그래프길이"]
+    x = []
+    y = []
+    y_star = []
+    total = []
+    a = group_by()
+    for i in range(len(a)):
+        x.append(a[i][0])
+        y.append(round(a[i][1]))
+        y_star.append('*'*y[i])
+        total.append([x[i],y[i],y_star[i]])
+    
+    print()
+    print('barplot'.center(40, '='))
+    print()
+    for i in range(len(x)):
+        print('{0:<13} {1:<4} | {2:<}'.format(total[i][0],total[i][1],total[i][2]))
+    print()
+
+def text_mining():
+    '''
+    작성자 : 최연식
+    입력받은 텍스트로부터 각 단어별 빈도분석을 한다.
+    '''
+    text = input("텍스트마이닝을 수행할 문장을 입력하시오.").lower().split()
+    result = Counter(text)
+    print(result)
+
+def sort_1(df):
+    d = []
+    c = input('정렬 할 변수명을 입력하세요 : ')
+    if c in df[0]:
+        for i in range(1,len(df)):
+            b = df[i][:]
+            d.append(b)
+            i += 1
+    a = int(input("오름/내림차순 기능을 선택하시오 (오름:1 /내림: 2)  : "))
+    if a == 1:
+        d.sort()
+        return d
+    if a == 2:
+        d.sort(reverse = True)
+        return d
+
+def n_var():
+    b = []
+    print(varList())
+    a = str(input('찾을 변수명을 입력하세요 : '))
+    if a in df[0]:
+        for i in range(len(df)):
+            b.append(df[i][df[0].index(a)])
+            i+=1
+        del b[0]   
+    return b
+
+if __name__ == '__main__':
+    addr = "C:\workspace\Python\dust_weather.csv"
+    #data = readCsv(addr)
+    #df = data
+    #print(group_by())
+    df = [['addr','sub1','sub2','sub3'],['a',4,5,6],['b',7,8,9,],['a',1,2,3],['c',2,2,2],['c',4,5,6],['b',7,8,9,],['a',1,2,3],['b',2,2,2],['d',4,5,6],['b',7,8,9,],['e',1,2,3],['f',2,2,2],['a',4,5,6],['b',7,8,9,],['a',1,2,3],['b',2,2,2],['g',0,0,0]]
+    barplot()
+    #text_mining()
+    '''
+    df = readCsv(addr)
+    print(group_by())
+    printStr()
+    printDim()
+    print(varList())
+    printHead(2)
+    printTail(2)
+    printDf()
+    '''
